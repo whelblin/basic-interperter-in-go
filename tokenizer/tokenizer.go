@@ -4,29 +4,39 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"slices"
 )
 
-func Test() {
-	fmt.Printf("testing token")
-}
-
-type token struct {
-	name  string
-	value string
+type Token struct {
+	Name  string
+	Value string
 }
 
 var pattern = map[string]string{
-	`^\s+`:         "space",
-	`^\+|^\-`:      "binary_operator",
-	`^\d+(\.\d*)?`: "number",
-	`"([^"]|"")*"`: "string",
-	//`.`:            "error",
+	`^\s+`:                      "space",
+	`^\+|^\-|^\*|^/`:            "binary_operator",
+	`^\d+(\.\d*)?`:              "number",
+	`^"([^"]|"")*"`:             "string",
+	`^<|^>|^<=|^>=|^==|^!=`:     "comparison",
+	`^\(`:                       "left_parenthesis",
+	`^\)`:                       "right_parenthesis",
+	`^\{`:                       "left_curly_brace",
+	`^\}`:                       "right_curly_brace",
+	`^\;`:                       "semicolon",
+	`^([a-zA-Z_][a-zA-Z0-9_]*)`: "identifier",
+	`^=`:                        "assignment",
+	//`^print`:                  "print_statement",
 }
+
+var tokenCheck = []string{"print_statement", "binary_operator", "number",
+	"string", "comparison", "left_parenthesis",
+	"right_parenthesis", "left_curly_brace",
+	"right_curly_brace", "semicolon", "identifier", "assignment"}
 
 // The lex/tokenize function
 
-func Tokenize(characters string) []token {
-	var testTokens = []token{}
+func Tokenize(characters string) []Token {
+	var testTokens = []Token{}
 	fmt.Println("tokenizing", characters)
 	var i, v string
 	pos := 0
@@ -50,67 +60,20 @@ func Tokenize(characters string) []token {
 		}
 		pos += submatches[1]
 		//fmt.Printf("substr: %v\n", substr)
-		if v == "number" || v == "binary_operator" || v == "string" {
-			testTokens = append(testTokens, token{v, substr[submatches[0]:submatches[1]]})
+		if slices.Contains(tokenCheck, v) {
+			testTokens = append(testTokens, Token{v, substr[submatches[0]:submatches[1]]})
 			continue
-		}
-		if v == "space" {
+		} else if v == "space" {
 			continue
+		} else {
+			fmt.Printf("Unknown type for %v", substr[submatches[0]:submatches[1]])
+			os.Exit(1)
 		}
-		testTokens = append(testTokens, token{"", substr[submatches[0]:submatches[1]]})
+		testTokens = append(testTokens, Token{"", substr[submatches[0]:submatches[1]]})
 	}
-	fmt.Println(testTokens)
+	//fmt.Println(testTokens)
 	return testTokens
 	//tokens := [0]string{}
 	//pos := 0
 
 }
-
-/*
-def test_string_tokens():
-    print("testing string tokens")
-    for s in ['"example"', '"this is a longer example"', '"an embedded "" quote"']:
-        # adjust for the embedded quote behaviour
-        r = s[1:-1].replace('""','"')
-        assert tokenize(s) == [
-            ["string", r]
-        ], f"Expected {[['string', r]]}, got {tokenize(s)}."
-
-def test_identifier_tokens():
-    print("testing identifier tokens")
-    for s in ["x", "y", "z", "alpha", "beta", "gamma"]:
-        assert tokenize(s) == [
-            ["identifier", s]
-        ], f"Expected {[['identifier', s]]}, got {tokenize(s)}."
-
-def test_whitespace():
-    print("testing whitespace")
-    for s in ["1", "1  ", "  1", "  1  "]:
-        assert tokenize(s) == [["number", 1]]
-
-def test_multiple_tokens():
-    print("testing multiple tokens")
-    assert tokenize("1+2") == [["number", 1], "+", ["number", 2]]
-    assert tokenize("1+2-3") == [["number", 1], "+", ["number", 2], "-", ["number", 3]]
-    assert tokenize("3+4*(5-2)") == [
-        ["number", 3],
-        "+",
-        ["number", 4],
-        "*",
-        "(",
-        ["number", 5],
-        "-",
-        ["number", 2],
-        ")",
-    ]
-    assert tokenize("3+4*(5-2)") == tokenize("3 + 4 * (5 - 2)")
-    assert tokenize("3+4*(5-2)") == tokenize("  3  +  4 * (5 - 2)  ")
-    assert tokenize("3+4*(5-2)") == tokenize(" 3 + 4 * (5 - 2) ")
-
-
-def test_keywords():
-    print("testing keywords")
-    for keyword in ["print","if","else","while"]:
-        assert tokenize(keyword) == [keyword]
-
-*/
