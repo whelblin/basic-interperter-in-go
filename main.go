@@ -28,7 +28,7 @@ func main() {
 			evaluator.Evalute(ast)
 		}
 	} else {
-		//runner()
+		runner()
 		tokens, _ := tokenizer.Tokenize(`x = 3 + 4; print x;`)
 		fmt.Println("Tokens", tokens)
 		ast, _ := parser.Parse(tokens)

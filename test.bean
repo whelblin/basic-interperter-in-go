@@ -2,6 +2,7 @@
     x = 7;
     print x;
     print "test";
+    print x + 10;
 }
 
 
