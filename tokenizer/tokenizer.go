@@ -1,6 +1,7 @@
 package tokenizer
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"regexp"
@@ -13,7 +14,7 @@ type Token struct {
 }
 
 var pattern = map[string]string{
-	`^\s+`:                      "space",
+	`^\s+|^\n|^\t`:              "space",
 	`^\+|^\-|^\*|^/`:            "binary_operator",
 	`^\d+(\.\d*)?`:              "number",
 	`^"([^"]|"")*"`:             "string",
@@ -35,9 +36,9 @@ var tokenCheck = []string{"print_statement", "binary_operator", "number",
 
 // The lex/tokenize function
 
-func Tokenize(characters string) []Token {
+func Tokenize(characters string) ([]Token, error) {
 	var testTokens = []Token{}
-	fmt.Println("tokenizing", characters)
+	//fmt.Println("tokenizing", characters)
 	var i, v string
 	pos := 0
 	var submatches []int
@@ -55,8 +56,7 @@ func Tokenize(characters string) []Token {
 		}
 		// not allowed token
 		if submatches == nil {
-			fmt.Printf("Not allowed token: %v at pos %v >> ", characters, pos)
-			os.Exit(1)
+			return []Token{}, errors.New("Not allowed token")
 		}
 		pos += submatches[1]
 		//fmt.Printf("substr: %v\n", substr)
@@ -67,13 +67,33 @@ func Tokenize(characters string) []Token {
 			continue
 		} else {
 			fmt.Printf("Unknown type for %v", substr[submatches[0]:submatches[1]])
-			os.Exit(1)
+			return []Token{}, errors.New("unknown token type")
 		}
-		testTokens = append(testTokens, Token{"", substr[submatches[0]:submatches[1]]})
+		//testTokens = append(testTokens, Token{"", substr[submatches[0]:submatches[1]]})
 	}
 	//fmt.Println(testTokens)
-	return testTokens
+	return testTokens, nil
 	//tokens := [0]string{}
 	//pos := 0
 
+}
+
+func Equal(a, b []Token) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func Assert(s string, testToken []Token) {
+	i, _ := Tokenize(s)
+	if !Equal(i, testToken) {
+		fmt.Println(i, testToken)
+		os.Exit(2)
+	}
 }
