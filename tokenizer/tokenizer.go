@@ -24,7 +24,7 @@ var pattern = map[string]string{
 	`^\{`:                       "left_curly_brace",
 	`^\}`:                       "right_curly_brace",
 	`^\;`:                       "semicolon",
-	`^([a-zA-Z_][a-zA-Z0-9_]*)`: "identifier",
+	`^([a-zA-Z_][a-zA-Z0-9_]*)`: "identifier", // if,while, and for also
 	`^=`:                        "assignment",
 	//`^print`:                  "print_statement",
 }

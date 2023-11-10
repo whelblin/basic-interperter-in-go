@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"interperter/tokenizer"
 	"os"
+	"reflect"
 	"strconv"
 )
 
@@ -59,6 +60,26 @@ func evalute_assignment(name string, x map[string]interface{}) bool {
 	env[name] = evaluated_x
 	return true
 }
+func evalute_if(condition, then map[string]interface{}, else_statement any) any {
+	con := evalute_statement(condition)
+	if reflect.TypeOf(con) == reflect.TypeOf(1.0) && con.(float64) == 1 {
+
+		con = true
+	} else {
+		con = false
+	}
+	//fmt.Println("Con", con)
+	if con.(bool) {
+		return evalute_statement(then)
+	} else {
+		if else_statement != nil {
+			return evalute_statement(else_statement.(map[string]interface{}))
+		} else {
+			return nil
+		}
+	}
+
+}
 func evalute_statement(v map[string]interface{}) any {
 	//fmt.Println(v)
 	t := v["type"]
@@ -79,6 +100,8 @@ func evalute_statement(v map[string]interface{}) any {
 			name := v["name"]
 			//fmt.Println("env", env[name.(string)])
 			return env[name.(string)]
+		} else if t == "if" {
+			return evalute_if(v["condition"].(map[string]interface{}), v["then"].(map[string]interface{}), v["else"])
 		}
 	}
 	//number

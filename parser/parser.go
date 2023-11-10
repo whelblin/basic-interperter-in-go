@@ -45,23 +45,49 @@ func parse_statement() (map[string]interface{}, error) {
 		return parse_block(), nil
 
 	} else if current_token.Name == "identifier" {
-		name := current_token.Value
-		consume_token()
-		if get_current_token().Value != "=" {
-			return map[string]interface{}{}, errors.New("missing =")
+		// if statement keyword
+		if current_token.Value == "if" {
+			consume_token()
+			if get_current_token().Value != "(" {
+				return map[string]interface{}{}, errors.New("expected '('")
+			}
+			consume_token()
+			condition := parse_expression()
+			if get_current_token().Value != ")" {
+				return map[string]interface{}{}, errors.New("expected ')'")
+			}
 
+			consume_token()
+			then_statement, _ := parse_statement()
+			var else_statement interface{}
+			if get_current_token().Value == "else" {
+				consume_token()
+				else_statement, _ = parse_statement()
+			} else {
+				else_statement = nil
+			}
+			return map[string]interface{}{"type": "if", "condition": condition, "then": then_statement, "else": else_statement}, nil
+
+		} else { // user variable
+			name := current_token.Value
+			consume_token()
+			if get_current_token().Value != "=" {
+				return map[string]interface{}{}, errors.New("missing =")
+
+			}
+			consume_token()
+			expression := parse_expression()
+			if get_current_token().Value != ";" {
+				return map[string]interface{}{}, errors.New("missing ;")
+			}
+			consume_token()
+			//fmt.Println("expression:", expression)
+			return map[string]interface{}{"type": "assignment", "name": name, "expression": expression}, nil
 		}
-		consume_token()
-		expression := parse_expression()
-		if get_current_token().Value != ";" {
-			return map[string]interface{}{}, errors.New("missing ;")
-		}
-		consume_token()
-		//fmt.Println("expression:", expression)
-		return map[string]interface{}{"type": "assignment", "name": name, "expression": expression}, nil
 	} else {
 		return map[string]interface{}{}, errors.New("invalid statement")
 	}
+	//return map[string]interface{}{}, errors.New("invalid statement")
 }
 
 func parse_block() map[string]interface{} {

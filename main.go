@@ -29,7 +29,9 @@ func main() {
 		}
 	} else {
 		runner()
-		tokens, _ := tokenizer.Tokenize(`x = 3 + 4; print x;`)
+		tokens, _ := tokenizer.Tokenize(`if (0) {
+			print 5;
+		}`)
 		fmt.Println("Tokens", tokens)
 		ast, _ := parser.Parse(tokens)
 		fmt.Printf("%# v\n", pretty.Formatter(ast))
