@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"interperter/tokenizer"
 	"os"
-	"reflect"
 	"strconv"
 )
 
@@ -13,6 +12,15 @@ var binary_operations = map[string]func(float64, float64) float64{
 	"-": func(x, y float64) float64 { return x - y },
 	"*": func(x, y float64) float64 { return x * y },
 	"/": func(x, y float64) float64 { return x / y },
+}
+
+var binary_comparisons = map[string]func(float64, float64) bool{
+	"<":  func(x, y float64) bool { return x < y },
+	"<=": func(x, y float64) bool { return x <= y },
+	">":  func(x, y float64) bool { return x > y },
+	">=": func(x, y float64) bool { return x >= y },
+	"==": func(x, y float64) bool { return x == y },
+	"!=": func(x, y float64) bool { return x != y },
 }
 var unary_operations = map[string]func(float32) float32{
 	"-": func(f float32) float32 { return -f },
@@ -61,15 +69,9 @@ func evalute_assignment(name string, x map[string]interface{}) bool {
 	return true
 }
 func evalute_if(condition, then map[string]interface{}, else_statement any) any {
-	con := evalute_statement(condition)
-	if reflect.TypeOf(con) == reflect.TypeOf(1.0) && con.(float64) == 1 {
-
-		con = true
-	} else {
-		con = false
-	}
+	con := evalate_condition(condition)
 	//fmt.Println("Con", con)
-	if con.(bool) {
+	if con {
 		return evalute_statement(then)
 	} else {
 		if else_statement != nil {
@@ -79,6 +81,27 @@ func evalute_if(condition, then map[string]interface{}, else_statement any) any 
 		}
 	}
 
+}
+
+func evalute_while(condition, then_statement map[string]interface{}) any {
+	var result interface{} = nil
+	for evalate_condition(condition) {
+		result = evalute_statement(then_statement)
+	}
+	return result
+}
+func evalate_condition(condition map[string]interface{}) bool {
+	if condition["type"] == "number" || condition["type"] == "identifier" {
+		result := evalute_statement(condition)
+		if result.(float64) > 0 {
+			return true
+		} else {
+			return false
+		}
+
+	} else {
+		return evalute_statement(condition).(bool)
+	}
 }
 func evalute_statement(v map[string]interface{}) any {
 	//fmt.Println(v)
@@ -102,6 +125,16 @@ func evalute_statement(v map[string]interface{}) any {
 			return env[name.(string)]
 		} else if t == "if" {
 			return evalute_if(v["condition"].(map[string]interface{}), v["then"].(map[string]interface{}), v["else"])
+		} else if t == "while" {
+			return evalute_while(v["condition"].(map[string]interface{}), v["do"].(map[string]interface{}))
+		} else if t == "comparison" {
+			evaluted_x, err_x := evalute_statement(v["left"].(map[string]interface{})).(float64)
+			evaluted_y, err_y := evalute_statement(v["right"].(map[string]interface{})).(float64)
+			if !err_x || !err_y {
+				fmt.Println("invalid types")
+				os.Exit(5)
+			}
+			return binary_comparisons[v["operator"].(tokenizer.Token).Value](evaluted_x, evaluted_y)
 		}
 	}
 	//number

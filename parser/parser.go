@@ -2,6 +2,7 @@ package parser
 
 import (
 	"errors"
+	"fmt"
 	"interperter/tokenizer"
 	"os"
 )
@@ -68,6 +69,21 @@ func parse_statement() (map[string]interface{}, error) {
 			}
 			return map[string]interface{}{"type": "if", "condition": condition, "then": then_statement, "else": else_statement}, nil
 
+		} else if current_token.Value == "while" {
+			consume_token()
+			if get_current_token().Value != "(" {
+				return map[string]interface{}{}, errors.New("expected '('")
+			}
+			consume_token()
+			condition := parse_expression()
+			if get_current_token().Value != ")" {
+				return map[string]interface{}{}, errors.New("expected ')'")
+			}
+			consume_token()
+			do_statement, _ := parse_statement()
+			return map[string]interface{}{"type": "while",
+				"condition": condition,
+				"do":        do_statement}, nil
 		} else { // user variable
 			name := current_token.Value
 			consume_token()
@@ -104,12 +120,22 @@ func parse_block() map[string]interface{} {
 
 func parse_expression() map[string]interface{} {
 	left_term := parse_term()
+	fmt.Println(left_term)
+	fmt.Println(get_current_token())
 	for get_current_token().Value == "+" || get_current_token().Value == "-" {
 		operator := get_current_token()
 		consume_token()
 		right_term := parse_term()
 		//left_term = [op, left_term, right_term]
 		left_term = map[string]interface{}{"type": "binary", "left": left_term, "operator": operator, "right": right_term}
+	}
+	for get_current_token().Value == "<" || get_current_token().Value == ">" ||
+		get_current_token().Value == "<=" || get_current_token().Value == ">=" ||
+		get_current_token().Value == "==" || get_current_token().Value == "!=" {
+		operator := get_current_token()
+		consume_token()
+		right_term := parse_term()
+		left_term = map[string]interface{}{"type": "comparison", "left": left_term, "operator": operator, "right": right_term}
 	}
 
 	return left_term
