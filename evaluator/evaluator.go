@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"interperter/tokenizer"
 	"os"
+	"reflect"
 	"strconv"
 )
 
@@ -21,6 +22,14 @@ var binary_comparisons = map[string]func(float64, float64) bool{
 	">=": func(x, y float64) bool { return x >= y },
 	"==": func(x, y float64) bool { return x == y },
 	"!=": func(x, y float64) bool { return x != y },
+}
+var binary_comparisons_string = map[string]func(string, string) bool{
+	"<":  func(x, y string) bool { return x < y },
+	"<=": func(x, y string) bool { return x <= y },
+	">":  func(x, y string) bool { return x > y },
+	">=": func(x, y string) bool { return x >= y },
+	"==": func(x, y string) bool { return x == y },
+	"!=": func(x, y string) bool { return x != y },
 }
 var unary_operations = map[string]func(float32) float32{
 	"-": func(f float32) float32 { return -f },
@@ -128,13 +137,16 @@ func evalute_statement(v map[string]interface{}) any {
 		} else if t == "while" {
 			return evalute_while(v["condition"].(map[string]interface{}), v["do"].(map[string]interface{}))
 		} else if t == "comparison" {
-			evaluted_x, err_x := evalute_statement(v["left"].(map[string]interface{})).(float64)
-			evaluted_y, err_y := evalute_statement(v["right"].(map[string]interface{})).(float64)
-			if !err_x || !err_y {
+			evaluted_x := evalute_statement(v["left"].(map[string]interface{}))
+			evaluted_y := evalute_statement(v["right"].(map[string]interface{}))
+			if reflect.TypeOf(evaluted_x) == reflect.TypeOf(1.0) && reflect.TypeOf(evaluted_y) == reflect.TypeOf(1.0) {
+				return binary_comparisons[v["operator"].(tokenizer.Token).Value](evaluted_x.(float64), evaluted_y.(float64))
+			} else if reflect.TypeOf(evaluted_x) == reflect.TypeOf("1") && reflect.TypeOf(evaluted_y) == reflect.TypeOf("1") {
+				return binary_comparisons_string[v["operator"].(tokenizer.Token).Value](evaluted_x.(string), evaluted_y.(string))
+			} else {
 				fmt.Println("invalid types")
 				os.Exit(5)
 			}
-			return binary_comparisons[v["operator"].(tokenizer.Token).Value](evaluted_x, evaluted_y)
 		}
 	}
 	//number

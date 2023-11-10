@@ -2,7 +2,6 @@ package parser
 
 import (
 	"errors"
-	"fmt"
 	"interperter/tokenizer"
 	"os"
 )
@@ -120,8 +119,7 @@ func parse_block() map[string]interface{} {
 
 func parse_expression() map[string]interface{} {
 	left_term := parse_term()
-	fmt.Println(left_term)
-	fmt.Println(get_current_token())
+
 	for get_current_token().Value == "+" || get_current_token().Value == "-" {
 		operator := get_current_token()
 		consume_token()
