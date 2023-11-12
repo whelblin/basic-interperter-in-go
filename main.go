@@ -28,9 +28,8 @@ func main() {
 			evaluator.Evalute(ast)
 		}
 	} else {
-		fmt.Println("a" < "b")
-		runner()
-		tokens, _ := tokenizer.Tokenize(`print 1 < 2;`)
+		//runner()
+		tokens, _ := tokenizer.Tokenize(`do{print 1;} while (3 < 2);`)
 		fmt.Println("Tokens", tokens)
 		ast, _ := parser.Parse(tokens)
 		fmt.Printf("%# v\n", pretty.Formatter(ast))

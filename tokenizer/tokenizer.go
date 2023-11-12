@@ -8,34 +8,41 @@ import (
 	"slices"
 )
 
+// class to store token data
 type Token struct {
 	Name  string
 	Value string
 }
 
+// patterns used to check the input data and assign tokens
 var pattern = map[string]string{
 	`^\s+|^\n|^\t`:              "space",
 	`^\+|^\-|^\*|^/`:            "binary_operator",
 	`^\d+(\.\d*)?`:              "number",
 	`^"([^"]|"")*"`:             "string",
-	`^<|^>|^<=|^>=|^==|^!=`:     "comparison",
+	`^<|^>`:                     "comparison",
+	`^!`:                        "not",
 	`^\(`:                       "left_parenthesis",
 	`^\)`:                       "right_parenthesis",
 	`^\{`:                       "left_curly_brace",
 	`^\}`:                       "right_curly_brace",
 	`^\;`:                       "semicolon",
-	`^([a-zA-Z_][a-zA-Z0-9_]*)`: "identifier", // if,while, and for also
-	`^=`:                        "assignment",
-	//`^print`:                  "print_statement",
+	`^([a-zA-Z_][a-zA-Z0-9_]*)`: "identifier", // if, print, ,while, do, user variables
+	`^={1}`:                     "assignment",
 }
 
+// used to check to make sure the token exisits
 var tokenCheck = []string{"print_statement", "binary_operator", "number",
 	"string", "comparison", "left_parenthesis",
 	"right_parenthesis", "left_curly_brace",
-	"right_curly_brace", "semicolon", "identifier", "assignment"}
+	"right_curly_brace", "semicolon", "identifier", "assignment", "not"}
 
 // The lex/tokenize function
-
+/**
+Goes though and finds the token assocated with the input text
+goes character by character. Once it finds a match, add the token to the list
+returns the list and any error codes
+**/
 func Tokenize(characters string) ([]Token, error) {
 	var testTokens = []Token{}
 	//fmt.Println("tokenizing", characters)
@@ -58,7 +65,7 @@ func Tokenize(characters string) ([]Token, error) {
 		if submatches == nil {
 			return []Token{}, errors.New("Not allowed token")
 		}
-		pos += submatches[1]
+		pos += submatches[1] // next string
 		//fmt.Printf("substr: %v\n", substr)
 		if slices.Contains(tokenCheck, v) {
 			testTokens = append(testTokens, Token{v, substr[submatches[0]:submatches[1]]})
@@ -78,6 +85,11 @@ func Tokenize(characters string) ([]Token, error) {
 
 }
 
+/*
+*
+helper function used to test if two tokens are the same
+*
+*/
 func Equal(a, b []Token) bool {
 	if len(a) != len(b) {
 		return false
@@ -90,10 +102,15 @@ func Equal(a, b []Token) bool {
 	return true
 }
 
+/*
+*
+helper function that asserts if two functions are the same
+*
+*/
 func Assert(s string, testToken []Token) {
 	i, _ := Tokenize(s)
 	if !Equal(i, testToken) {
 		fmt.Println(i, testToken)
-		os.Exit(2)
+		os.Exit(1)
 	}
 }

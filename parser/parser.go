@@ -2,6 +2,7 @@ package parser
 
 import (
 	"errors"
+	"fmt"
 	"interperter/tokenizer"
 	"os"
 )
@@ -9,12 +10,23 @@ import (
 var tokens []tokenizer.Token
 var current_token_index int
 
+/*
+*
+returns the current token by its index in the array
+*
+*/
 func get_current_token() tokenizer.Token {
 	if current_token_index < len(tokens) {
 		return tokens[current_token_index]
 	}
 	return tokenizer.Token{"nil", "nil"}
 }
+
+/*
+*
+adds one to the current token index to move to the next token
+*
+*/
 func consume_token() {
 	current_token_index += 1
 }
@@ -83,6 +95,31 @@ func parse_statement() (map[string]interface{}, error) {
 			return map[string]interface{}{"type": "while",
 				"condition": condition,
 				"do":        do_statement}, nil
+		} else if current_token.Value == "do" {
+			consume_token()
+			if get_current_token().Value != "{" {
+				return map[string]interface{}{}, errors.New("expected '{'")
+			}
+			do := parse_block()
+			fmt.Println(do)
+			if get_current_token().Value != "while" {
+				return map[string]interface{}{}, errors.New("expected 'while'")
+			}
+			consume_token()
+			if get_current_token().Value != "(" {
+				return map[string]interface{}{}, errors.New("expected '('")
+			}
+			consume_token()
+			condition := parse_expression()
+			if get_current_token().Value != ")" {
+				return map[string]interface{}{}, errors.New("expected ')'")
+			}
+			consume_token()
+			if get_current_token().Value != ";" {
+				return map[string]interface{}{}, errors.New("missing ;")
+			}
+			consume_token()
+			return map[string]interface{}{"type": "do_statement", "do": do, "condition": condition}, nil
 		} else { // user variable
 			name := current_token.Value
 			consume_token()
@@ -127,13 +164,28 @@ func parse_expression() map[string]interface{} {
 		//left_term = [op, left_term, right_term]
 		left_term = map[string]interface{}{"type": "binary", "left": left_term, "operator": operator, "right": right_term}
 	}
-	for get_current_token().Value == "<" || get_current_token().Value == ">" ||
-		get_current_token().Value == "<=" || get_current_token().Value == ">=" ||
-		get_current_token().Value == "==" || get_current_token().Value == "!=" {
+	for get_current_token().Value == "<" || get_current_token().Value == ">" {
 		operator := get_current_token()
+		consume_token()
+		if get_current_token().Value == "=" {
+			operator.Value += "="
+			consume_token()
+		}
+		right_term := parse_term()
+		left_term = map[string]interface{}{"type": "comparison", "left": left_term, "operator": operator, "right": right_term}
+	}
+
+	for get_current_token().Value == "=" || get_current_token().Value == "!" {
+		operator := get_current_token()
+		consume_token()
+		if get_current_token().Value != "=" {
+			os.Exit(2)
+		}
+		operator.Value += get_current_token().Value
 		consume_token()
 		right_term := parse_term()
 		left_term = map[string]interface{}{"type": "comparison", "left": left_term, "operator": operator, "right": right_term}
+
 	}
 
 	return left_term
@@ -178,7 +230,7 @@ func parse_factor() map[string]interface{} {
 		consume_token()
 		return map[string]interface{}{current_token.Name: current_token.Value}
 	} else {
-		os.Exit(3)
+		os.Exit(2)
 	}
 	return map[string]interface{}{}
 }

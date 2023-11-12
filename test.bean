@@ -1,7 +1,6 @@
 {
-   if ("1"< "b"){
-    print "yes";
-   }
+   x = "hello";
+   print x;
 }
 
 
