@@ -120,6 +120,19 @@ func parse_statement() (map[string]interface{}, error) {
 			}
 			consume_token()
 			return map[string]interface{}{"type": "do_statement", "do": do, "condition": condition}, nil
+		} else if current_token.Value == "function" {
+			consume_token()
+			name := get_current_token().Value
+			consume_token()
+			if get_current_token().Value != "(" {
+				return map[string]interface{}{}, errors.New("expected '('")
+			}
+			consume_token()
+			parameters, _ := parse_parameters()
+			consume_token()
+			body := parse_block()
+			return map[string]interface{}{"type": "function", "name": name, "parameters": parameters, "body": body}, nil
+
 		} else { // user variable
 			name := current_token.Value
 			consume_token()
@@ -139,7 +152,7 @@ func parse_statement() (map[string]interface{}, error) {
 	} else {
 		return map[string]interface{}{}, errors.New("invalid statement")
 	}
-	//return map[string]interface{}{}, errors.New("invalid statement")
+	return map[string]interface{}{}, errors.New("invalid statement")
 }
 
 func parse_block() map[string]interface{} {
@@ -209,6 +222,7 @@ func parse_factor() map[string]interface{} {
 	if current_token.Name == "number" {
 		consume_token()
 		return map[string]interface{}{current_token.Name: current_token.Value}
+
 	} else if current_token.Name == "binary_operator" {
 		operator := get_current_token()
 		consume_token()
@@ -218,13 +232,18 @@ func parse_factor() map[string]interface{} {
 		consume_token()
 		expression := parse_expression()
 		if get_current_token().Name != "right_parenthesis" {
-			os.Exit(2)
+			os.Exit(4)
 		}
 		consume_token()
 		return expression
 	} else if current_token.Name == "identifier" {
+		identifier := current_token.Value
 		consume_token()
-		return map[string]interface{}{"type": "identifier", "name": current_token.Value}
+		if get_current_token().Value == "(" {
+			parse_function_call(identifier)
+		} else {
+			return map[string]interface{}{"type": "identifier", "name": identifier}
+		}
 
 	} else if current_token.Name == "string" {
 		consume_token()
@@ -233,4 +252,41 @@ func parse_factor() map[string]interface{} {
 		os.Exit(2)
 	}
 	return map[string]interface{}{}
+}
+func parse_parameters() ([]map[string]interface{}, error) {
+	var parameters []map[string]interface{}
+	for get_current_token().Value != ")" {
+		parameters = append(parameters, parse_expression())
+		if get_current_token().Value != ")" {
+			if get_current_token().Value != "," {
+				return []map[string]interface{}{}, errors.New("expected ', or )'")
+			} else {
+				consume_token()
+			}
+		}
+
+	}
+	return parameters, nil
+}
+func parse_arguments() ([]map[string]interface{}, error) {
+	var arguments []map[string]interface{}
+	for get_current_token().Value != ")" {
+		arguments = append(arguments, parse_expression())
+		if get_current_token().Value != ")" {
+			if get_current_token().Value != "," {
+				return []map[string]interface{}{}, errors.New("expected ', or )'")
+			} else {
+				consume_token()
+			}
+		}
+
+	}
+	return arguments, nil
+}
+func parse_function_call(identifier string) (map[string]interface{}, error) {
+	consume_token() // "("
+	arguments, _ := parse_arguments()
+	consume_token()
+	return map[string]interface{}{"type": "function_call", "name": identifier, "arguments": arguments}, nil
+
 }

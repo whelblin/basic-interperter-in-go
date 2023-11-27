@@ -29,7 +29,12 @@ func main() {
 		}
 	} else {
 		//runner()
-		tokens, _ := tokenizer.Tokenize(`do{print 1;} while (3 < 2);`)
+		tokens, err := tokenizer.Tokenize(`function add(x,y){print x + y;}`)
+		//tokens, err := tokenizer.Tokenize(`add (1,2);`)
+
+		if err != nil {
+			fmt.Println("ERROR:", err)
+		}
 		fmt.Println("Tokens", tokens)
 		ast, _ := parser.Parse(tokens)
 		fmt.Printf("%# v\n", pretty.Formatter(ast))
