@@ -1,12 +1,4 @@
-{
-   x = "hello";
-   print x;
-   i = 0;
-   while (i < 10){
-      print i;
-      i = i+1;
-   }
-}
+function add(x,y){print x + y;}
 
 
 

@@ -56,86 +56,102 @@ func parse_statement() (map[string]interface{}, error) {
 	} else if current_token.Value == "{" {
 		return parse_block(), nil
 
+	} else if current_token.Value == "if" {
+		consume_token()
+		if get_current_token().Value != "(" {
+			return map[string]interface{}{}, errors.New("expected '('")
+		}
+		consume_token()
+		condition := parse_expression()
+		if get_current_token().Value != ")" {
+			return map[string]interface{}{}, errors.New("expected ')'")
+		}
+
+		consume_token()
+		then_statement, _ := parse_statement()
+		var else_statement interface{}
+		if get_current_token().Value == "else" {
+			consume_token()
+			else_statement, _ = parse_statement()
+		} else {
+			else_statement = nil
+		}
+		return map[string]interface{}{"type": "if", "condition": condition, "then": then_statement, "else": else_statement}, nil
+
+	} else if current_token.Value == "while" {
+		consume_token()
+		if get_current_token().Value != "(" {
+			return map[string]interface{}{}, errors.New("expected '('")
+		}
+		consume_token()
+		condition := parse_expression()
+		if get_current_token().Value != ")" {
+			return map[string]interface{}{}, errors.New("expected ')'")
+		}
+		consume_token()
+		do_statement, _ := parse_statement()
+		return map[string]interface{}{"type": "while",
+			"condition": condition,
+			"do":        do_statement}, nil
+	} else if current_token.Value == "do" {
+		consume_token()
+		if get_current_token().Value != "{" {
+			return map[string]interface{}{}, errors.New("expected '{'")
+		}
+		do := parse_block()
+		fmt.Println(do)
+		if get_current_token().Value != "while" {
+			return map[string]interface{}{}, errors.New("expected 'while'")
+		}
+		consume_token()
+		if get_current_token().Value != "(" {
+			return map[string]interface{}{}, errors.New("expected '('")
+		}
+		consume_token()
+		condition := parse_expression()
+		if get_current_token().Value != ")" {
+			return map[string]interface{}{}, errors.New("expected ')'")
+		}
+		consume_token()
+		if get_current_token().Value != ";" {
+			return map[string]interface{}{}, errors.New("missing ;")
+		}
+		consume_token()
+		return map[string]interface{}{"type": "do_statement", "do": do, "condition": condition}, nil
+	} else if current_token.Value == "function" {
+		consume_token()
+		name := get_current_token().Value
+		consume_token()
+		if get_current_token().Value != "(" {
+			return map[string]interface{}{}, errors.New("expected '('")
+		}
+		consume_token()
+		parameters, _ := parse_parameters()
+		consume_token()
+		body := parse_block()
+		return map[string]interface{}{"type": "function", "name": name, "parameters": parameters, "body": body}, nil
+
 	} else if current_token.Name == "identifier" {
-		// if statement keyword
-		if current_token.Value == "if" {
+		name := current_token.Value
+		consume_token()
+		if get_current_token().Value == "(" {
 			consume_token()
-			if get_current_token().Value != "(" {
-				return map[string]interface{}{}, errors.New("expected '('")
-			}
-			consume_token()
-			condition := parse_expression()
-			if get_current_token().Value != ")" {
-				return map[string]interface{}{}, errors.New("expected ')'")
-			}
-
-			consume_token()
-			then_statement, _ := parse_statement()
-			var else_statement interface{}
-			if get_current_token().Value == "else" {
+			var parameters []map[string]interface{}
+			for get_current_token().Value != ")" {
+				if get_current_token().Value != "," {
+					parameters = append(parameters, map[string]interface{}{get_current_token().Name: get_current_token().Value})
+				}
 				consume_token()
-				else_statement, _ = parse_statement()
-			} else {
-				else_statement = nil
-			}
-			return map[string]interface{}{"type": "if", "condition": condition, "then": then_statement, "else": else_statement}, nil
-
-		} else if current_token.Value == "while" {
-			consume_token()
-			if get_current_token().Value != "(" {
-				return map[string]interface{}{}, errors.New("expected '('")
-			}
-			consume_token()
-			condition := parse_expression()
-			if get_current_token().Value != ")" {
-				return map[string]interface{}{}, errors.New("expected ')'")
-			}
-			consume_token()
-			do_statement, _ := parse_statement()
-			return map[string]interface{}{"type": "while",
-				"condition": condition,
-				"do":        do_statement}, nil
-		} else if current_token.Value == "do" {
-			consume_token()
-			if get_current_token().Value != "{" {
-				return map[string]interface{}{}, errors.New("expected '{'")
-			}
-			do := parse_block()
-			fmt.Println(do)
-			if get_current_token().Value != "while" {
-				return map[string]interface{}{}, errors.New("expected 'while'")
-			}
-			consume_token()
-			if get_current_token().Value != "(" {
-				return map[string]interface{}{}, errors.New("expected '('")
-			}
-			consume_token()
-			condition := parse_expression()
-			if get_current_token().Value != ")" {
-				return map[string]interface{}{}, errors.New("expected ')'")
 			}
 			consume_token()
 			if get_current_token().Value != ";" {
 				return map[string]interface{}{}, errors.New("missing ;")
 			}
 			consume_token()
-			return map[string]interface{}{"type": "do_statement", "do": do, "condition": condition}, nil
-		} else if current_token.Value == "function" {
-			consume_token()
-			name := get_current_token().Value
-			consume_token()
-			if get_current_token().Value != "(" {
-				return map[string]interface{}{}, errors.New("expected '('")
-			}
-			consume_token()
-			parameters, _ := parse_parameters()
-			consume_token()
-			body := parse_block()
-			return map[string]interface{}{"type": "function", "name": name, "parameters": parameters, "body": body}, nil
+			return map[string]interface{}{"type": "function_call", "name": name, "parameters": parameters}, nil
+		} else {
+			// user variable
 
-		} else { // user variable
-			name := current_token.Value
-			consume_token()
 			if get_current_token().Value != "=" {
 				return map[string]interface{}{}, errors.New("missing =")
 
@@ -149,6 +165,7 @@ func parse_statement() (map[string]interface{}, error) {
 			//fmt.Println("expression:", expression)
 			return map[string]interface{}{"type": "assignment", "name": name, "expression": expression}, nil
 		}
+
 	} else {
 		return map[string]interface{}{}, errors.New("invalid statement")
 	}

@@ -15,28 +15,33 @@ type Token struct {
 }
 
 // patterns used to check the input data and assign tokens
-var pattern = map[string]string{
-	`^\s+|^\n|^\t`:              "space",
-	`^\+|^\-|^\*|^/`:            "binary_operator",
-	`^\d+(\.\d*)?`:              "number",
-	`^"([^"]|"")*"`:             "string",
-	`^<|^>`:                     "comparison",
-	`^!`:                        "not",
-	`^\(`:                       "left_parenthesis",
-	`^\)`:                       "right_parenthesis",
-	`^\{`:                       "left_curly_brace",
-	`^\}`:                       "right_curly_brace",
-	`^,`:                        "comma",
-	`^\;`:                       "semicolon",
-	`^([a-zA-Z_][a-zA-Z0-9_]*)`: "identifier", // if, print, ,while, do, user variables
-	`^={1}`:                     "assignment",
+var pattern = []map[string]string{
+	{`^\s+|^\n|^\t`: "space"},
+	{`^\+|^\-|^\*|^/`: "binary_operator"},
+	{`^\d+(\.\d*)?`: "number"},
+	{`^"([^"]|"")*"`: "string"},
+	{`^<|^>`: "comparison"},
+	{`^!`: "not"},
+	{`^\(`: "left_parenthesis"},
+	{`^\)`: "right_parenthesis"},
+	{`^\{`: "left_curly_brace"},
+	{`^\}`: "right_curly_brace"},
+	{`^,`: "comma"},
+	{`^\;`: "semicolon"},
+	{`^print`: "print"},
+	{`^if`: "if"},
+	{`^while`: "while"},
+	{`do`: "do"},
+	{`function`: "function"},
+	{`^([a-zA-Z_][a-zA-Z0-9_]*)`: "identifier"}, // if, print, ,while, do, user variables
+	{`^={1}`: "assignment"},
 }
 
 // used to check to make sure the token exisits
 var tokenCheck = []string{"print_statement", "binary_operator", "number",
 	"string", "comparison", "left_parenthesis",
 	"right_parenthesis", "left_curly_brace",
-	"right_curly_brace", "semicolon", "identifier", "assignment", "not", "comma"}
+	"right_curly_brace", "semicolon", "identifier", "assignment", "not", "comma", "print", "if", "while", "do", "function"}
 
 // The lex/tokenize function
 /**
@@ -53,7 +58,9 @@ func Tokenize(characters string) ([]Token, error) {
 	for pos < len(characters) {
 		substr := characters[pos:]
 		//fmt.Println("substr:", substr)
-		for i, v = range pattern {
+		for num := range pattern {
+			for i, v = range pattern[num] {
+			}
 			re, _ := regexp.Compile(i)
 			submatches = re.FindStringIndex(substr)
 			//fmt.Println("\tsubmatches", submatches, submatches == nil)
@@ -61,6 +68,7 @@ func Tokenize(characters string) ([]Token, error) {
 			if !(submatches == nil) {
 				break
 			}
+
 		}
 		// not allowed token
 		if submatches == nil {

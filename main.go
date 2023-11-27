@@ -38,7 +38,18 @@ func main() {
 		fmt.Println("Tokens", tokens)
 		ast, _ := parser.Parse(tokens)
 		fmt.Printf("%# v\n", pretty.Formatter(ast))
-		evaluator.Evalute(ast)
+		//evaluator.Evalute(ast)
+
+		tokens, err = tokenizer.Tokenize(`add(1,2);`)
+		//tokens, err := tokenizer.Tokenize(`add (1,2);`)
+
+		if err != nil {
+			fmt.Println("ERROR:", err)
+		}
+		fmt.Println("Tokens", tokens)
+		ast, _ = parser.Parse(tokens)
+		fmt.Printf("%# v\n", pretty.Formatter(ast))
+		//evaluator.Evalute(ast)
 	}
 }
 
