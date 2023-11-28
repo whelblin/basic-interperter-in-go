@@ -126,6 +126,10 @@ func evalate_condition(condition map[string]interface{}) bool {
 	return evalute_statement(condition).(float64) > 0
 
 }
+func function_declaration(name string, parameters []string, body map[string]interface{}) any {
+	return 1
+
+}
 func evalute_statement(v map[string]interface{}) any {
 	//fmt.Println(v)
 	t := v["type"]
@@ -157,14 +161,21 @@ func evalute_statement(v map[string]interface{}) any {
 		} else if t == "comparison" {
 			evaluted_x := evalute_statement(v["left"].(map[string]interface{}))
 			evaluted_y := evalute_statement(v["right"].(map[string]interface{}))
-			if reflect.TypeOf(evaluted_x) == reflect.TypeOf(1.0) && reflect.TypeOf(evaluted_y) == reflect.TypeOf(1.0) {
+			if reflect.TypeOf(evaluted_x) == reflect.TypeOf(1.0) && reflect.TypeOf(evaluted_y) == reflect.TypeOf(1.0) { // numbers
 				return binary_comparisons[v["operator"].(tokenizer.Token).Value](evaluted_x.(float64), evaluted_y.(float64))
-			} else if reflect.TypeOf(evaluted_x) == reflect.TypeOf("1") && reflect.TypeOf(evaluted_y) == reflect.TypeOf("1") {
+			} else if reflect.TypeOf(evaluted_x) == reflect.TypeOf("1") && reflect.TypeOf(evaluted_y) == reflect.TypeOf("1") { // strings
 				return binary_comparisons_string[v["operator"].(tokenizer.Token).Value](evaluted_x.(string), evaluted_y.(string))
 			} else {
 				fmt.Println("invalid types")
 				os.Exit(5)
 			}
+		} else if t == "function" {
+			var parameters []string
+			for _, p := range v["parameters"].([]map[string]interface{}) {
+				parameters = append(parameters, p["name"].(string))
+			}
+			fmt.Println(parameters)
+			return function_declaration(v["name"].(string), parameters, v["body"].(map[string]interface{}))
 		}
 	}
 	//number

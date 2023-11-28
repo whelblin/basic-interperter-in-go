@@ -19,7 +19,7 @@ func get_current_token() tokenizer.Token {
 	if current_token_index < len(tokens) {
 		return tokens[current_token_index]
 	}
-	return tokenizer.Token{"nil", "nil"}
+	return tokenizer.Token{Name: "nil", Value: "nil"}
 }
 
 /*
@@ -134,7 +134,7 @@ func parse_statement() (map[string]interface{}, error) {
 	} else if current_token.Name == "identifier" {
 		name := current_token.Value
 		consume_token()
-		if get_current_token().Value == "(" {
+		if get_current_token().Value == "(" { // function call
 			consume_token()
 			var parameters []map[string]interface{}
 			for get_current_token().Value != ")" {
@@ -169,7 +169,6 @@ func parse_statement() (map[string]interface{}, error) {
 	} else {
 		return map[string]interface{}{}, errors.New("invalid statement")
 	}
-	return map[string]interface{}{}, errors.New("invalid statement")
 }
 
 func parse_block() map[string]interface{} {
@@ -221,7 +220,6 @@ func parse_expression() map[string]interface{} {
 	return left_term
 }
 
-// START HERE
 func parse_term() map[string]interface{} {
 	left_factor := parse_factor()
 	for get_current_token().Value == "*" || get_current_token().Value == "/" {

@@ -28,8 +28,8 @@ func main() {
 			evaluator.Evalute(ast)
 		}
 	} else {
-		//runner()
-		tokens, err := tokenizer.Tokenize(`function add(x,y){print x + y;}`)
+		runner()
+		tokens, err := tokenizer.Tokenize(`input(x, "hello");`)
 		//tokens, err := tokenizer.Tokenize(`add (1,2);`)
 
 		if err != nil {
@@ -38,7 +38,7 @@ func main() {
 		fmt.Println("Tokens", tokens)
 		ast, _ := parser.Parse(tokens)
 		fmt.Printf("%# v\n", pretty.Formatter(ast))
-		//evaluator.Evalute(ast)
+		evaluator.Evalute(ast)
 
 		tokens, err = tokenizer.Tokenize(`add(1,2);`)
 		//tokens, err := tokenizer.Tokenize(`add (1,2);`)
