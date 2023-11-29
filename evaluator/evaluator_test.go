@@ -1,12 +1,130 @@
 package evaluator
 
 import (
-	"fmt"
+	"interperter/parser"
+	"interperter/tokenizer"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
+func evaluteText(text string) any {
+	tokens, _ := tokenizer.Tokenize(text)
+	ast, _ := parser.Parse(tokens)
+	return Evalute(ast)
+}
 func Test_binary_operations(t *testing.T) {
-	fmt.Printf("%v\n", (binary_operations["+"](3.5, 5)))
-	fmt.Printf("%v\n", (unary_operations["-"](3.5)))
+	assert := assert.New(t)
+	assert.Equal(binary_operations["+"](3.5, 5), 8.5, "should be equal")
+	assert.Equal(unary_operations["-"](3.5), -3.5, "should be equal")
+
+}
+
+func Test_print_statements(t *testing.T) {
+	assert := assert.New(t)
+	assert.Equal(evaluteText("print 2;"), 2.0, "should be equal")
+	assert.Equal(evaluteText("print 2 + 4;"), 6.0, "should be equal")
+	assert.Equal(evaluteText("print -5;"), -5.0, "should be equal")
+	assert.Equal(evaluteText(`print "hello";`), `hello`, "should be equal")
+	assert.Equal(evaluteText("print (2 * 2) + 5;"), 9.0, "should be equal")
+	assert.Equal(evaluteText("print 2 + 2 * 5;"), 12.0, "should be equal")
+
+}
+func Test_idenifier_statements(t *testing.T) {
+	assert := assert.New(t)
+	assert.Equal(evaluteText("x = 5; print x;"), 5.0, "should be equal")
+	assert.Equal(evaluteText("x = 5; print x + 4;"), 9.0, "should be equal")
+	assert.Equal(evaluteText("x = -5; print x;"), -5.0, "should be equal")
+	assert.Equal(evaluteText("x = -5; print x + 2;"), -3.0, "should be equal")
+	assert.Equal(evaluteText("x = 5; print x; x = 4;"), 4.0, "should be equal")
+	assert.Equal(evaluteText(`x = 5; print x; x = "hello";`), `hello`, "should be equal")
+	assert.Equal(evaluteText(`x = 5; y = x + 3; print x + y;`), 13.0, "should be equal")
+	assert.Equal(evaluteText(`x = 5; y = x + 3; print x + y -5;`), 8.0, "should be equal")
+}
+func Test_block_statement(t *testing.T) {
+	assert := assert.New(t)
+	assert.Equal(evaluteText("{x = 5; print x;}"), 5.0, "should be equal")
+	assert.Equal(evaluteText("{x = 5; print x + 4;}"), 9.0, "should be equal")
+	assert.Equal(evaluteText("{x = -5; print x;}"), -5.0, "should be equal")
+	assert.Equal(evaluteText("{x = -5; print x + 2;}"), -3.0, "should be equal")
+	assert.Equal(evaluteText("{x = 5; print x; x = 4;}"), 4.0, "should be equal")
+	assert.Equal(evaluteText(`{x = 5; print x; x = "hello";}`), `hello`, "should be equal")
+	assert.Equal(evaluteText(`{x = 5; y = x + 3; print x + y;}`), 13.0, "should be equal")
+	assert.Equal(evaluteText(`{x = 5; y = x + 3; print x + y -5;}`), 8.0, "should be equal")
+}
+
+func Test_if_statement(t *testing.T) {
+	assert := assert.New(t)
+	assert.Equal(evaluteText("if(1){print 1;}"), 1.0, "should be equal")
+	assert.Equal(evaluteText("if(5){print 1;}"), 1.0, "should be equal")
+	assert.Equal(evaluteText("if(0){print 1;}"), nil, "should be equal")
+	assert.Equal(evaluteText("if(-1){print 1;}"), nil, "should be equal")
+	assert.Equal(evaluteText("x = 1; if(x){print x;}"), 1.0, "should be equal")
+	assert.Equal(evaluteText("if(1){print 1;}else{print 2;}"), 1.0, "should be equal")
+	assert.Equal(evaluteText("if(0){print 1;}else{print 2;}"), 2.0, "should be equal")
+	assert.Equal(evaluteText("if(1 < 3){print 1;}else{print 2;}"), 1.0, "should be equal")
+	assert.Equal(evaluteText("if(3 > 5){print 1;}else{print 2;}"), 2.0, "should be equal")
+	assert.Equal(evaluteText("if(2 <= 2){print 1;}else{print 2;}"), 1.0, "should be equal")
+	assert.Equal(evaluteText("if(2 >= 1){print 1;}else{print 2;}"), 1.0, "should be equal")
+	assert.Equal(evaluteText("if(2 == 2){print 1;}else{print 2;}"), 1.0, "should be equal")
+	assert.Equal(evaluteText("if(2 != 2){print 1;}else{print 2;}"), 2.0, "should be equal")
+	assert.Equal(evaluteText(`if("a" != "a"){print 1;}else{print 2;}`), 2.0, "should be equal")
+	assert.Equal(evaluteText(`if("a" == "a"){print 1;}else{print 2;}`), 1.0, "should be equal")
+
+	assert.Equal(evaluteText(`if(1){if(0){
+											print 1;
+										}else{
+											print 2;
+											}
+										}else{
+											if(1){
+											print 3;
+											}else{
+												print 4;
+											}
+										}`), 2.0, "should be equal")
+	assert.Equal(evaluteText(`if(1){if(1){
+											print 1;
+										}else{
+											print 2;
+											}
+										}else{
+											if(1){
+											print 3;
+											}else{
+												print 4;
+											}
+										}`), 1.0, "should be equal")
+	assert.Equal(evaluteText(`if(0){if(0){
+											print 1;
+										}else{
+											print 2;
+											}
+										}else{
+											if(1){
+											print 3;
+											}else{
+												print 4;
+											}
+										}`), 3.0, "should be equal")
+	assert.Equal(evaluteText(`if(0){if(0){
+											print 1;
+										}else{
+											print 2;
+											}
+										}else{
+											if(0){
+											print 3;
+											}else{
+												print 4;
+											}
+										}`), 4.0, "should be equal")
+
+}
+
+func Test_while_loop(t *testing.T) {
+	assert := assert.New(t)
+	assert.Equal(evaluteText(`x = 10; while (x){x = x -1;}print x;`), 0.0, "should be equal")
+	assert.Equal(evaluteText(`x = 10; while (x > 2){x = x -1;}print x;`), 2.0, "should be equal")
 
 }

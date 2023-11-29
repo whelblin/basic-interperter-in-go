@@ -29,11 +29,27 @@ func main() {
 		}
 	} else {
 		runner()
-		tokens, _ := tokenizer.Tokenize(`x = 3 + 4; print x;`)
+		tokens, err := tokenizer.Tokenize(`input(x, "hello");`)
+		//tokens, err := tokenizer.Tokenize(`add (1,2);`)
+
+		if err != nil {
+			fmt.Println("ERROR:", err)
+		}
 		fmt.Println("Tokens", tokens)
 		ast, _ := parser.Parse(tokens)
 		fmt.Printf("%# v\n", pretty.Formatter(ast))
 		evaluator.Evalute(ast)
+
+		tokens, err = tokenizer.Tokenize(`add(1,2);`)
+		//tokens, err := tokenizer.Tokenize(`add (1,2);`)
+
+		if err != nil {
+			fmt.Println("ERROR:", err)
+		}
+		fmt.Println("Tokens", tokens)
+		ast, _ = parser.Parse(tokens)
+		fmt.Printf("%# v\n", pretty.Formatter(ast))
+		//evaluator.Evalute(ast)
 	}
 }
 

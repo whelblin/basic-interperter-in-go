@@ -2,8 +2,39 @@ package tokenizer
 
 import (
 	"fmt"
+	"os"
 	"testing"
 )
+
+/*
+*
+helper function used to test if two tokens are the same
+*
+*/
+func Equal(a, b []Token) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+/*
+*
+helper function that asserts if two functions are the same
+*
+*/
+func Assert(s string, testToken []Token) {
+	i, _ := Tokenize(s)
+	if !Equal(i, testToken) {
+		fmt.Println(i, testToken)
+		os.Exit(1)
+	}
+}
 
 func Test_simple_tokens(t *testing.T) {
 	examples := [2]string{"+", "-"}

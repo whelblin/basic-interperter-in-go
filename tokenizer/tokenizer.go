@@ -3,63 +3,75 @@ package tokenizer
 import (
 	"errors"
 	"fmt"
-	"os"
 	"regexp"
 	"slices"
 )
 
+// class to store token data
 type Token struct {
 	Name  string
 	Value string
 }
 
-var pattern = map[string]string{
-	`^\s+|^\n|^\t`:              "space",
-	`^\+|^\-|^\*|^/`:            "binary_operator",
-	`^\d+(\.\d*)?`:              "number",
-	`^"([^"]|"")*"`:             "string",
-	`^<|^>|^<=|^>=|^==|^!=`:     "comparison",
-	`^\(`:                       "left_parenthesis",
-	`^\)`:                       "right_parenthesis",
-	`^\{`:                       "left_curly_brace",
-	`^\}`:                       "right_curly_brace",
-	`^\;`:                       "semicolon",
-	`^([a-zA-Z_][a-zA-Z0-9_]*)`: "identifier",
-	`^=`:                        "assignment",
-	//`^print`:                  "print_statement",
+// patterns used to check the input data and assign tokens
+var pattern = []map[string]string{
+	{`^\s+|^\n|^\t`: "space"},
+	{`^\+|^\-|^\*|^/`: "binary_operator"},
+	{`^\d+(\.\d*)?`: "number"},
+	{`^"([^"]|"")*"`: "string"},
+	{`^<|^>`: "comparison"},
+	{`^!`: "not"},
+	{`^\(`: "left_parenthesis"},
+	{`^\)`: "right_parenthesis"},
+	{`^\{`: "left_curly_brace"},
+	{`^\}`: "right_curly_brace"},
+	{`^,`: "comma"},
+	{`^\;`: "semicolon"},
+	{`^print`: "print"},
+	{`^if`: "if"},
+	{`^while`: "while"},
+	{`^do`: "do"},
+	{`^input`: "input"},
+	{`^function`: "function"},
+	{`^([a-zA-Z_][a-zA-Z0-9_]*)`: "identifier"}, //user variables and user fuction calls
+	{`^={1}`: "assignment"},
 }
 
+// used to check to make sure the token exisits
 var tokenCheck = []string{"print_statement", "binary_operator", "number",
 	"string", "comparison", "left_parenthesis",
 	"right_parenthesis", "left_curly_brace",
-	"right_curly_brace", "semicolon", "identifier", "assignment"}
+	"right_curly_brace", "semicolon", "identifier", "assignment", "not", "comma", "print", "if", "while", "do", "function", "input"}
 
 // The lex/tokenize function
-
+/**
+Goes though and finds the token assocated with the input text
+goes character by character. Once it finds a match, add the token to the list
+returns the list and any error codes
+**/
 func Tokenize(characters string) ([]Token, error) {
 	var testTokens = []Token{}
-	//fmt.Println("tokenizing", characters)
 	var i, v string
 	pos := 0
 	var submatches []int
 	for pos < len(characters) {
 		substr := characters[pos:]
-		//fmt.Println("substr:", substr)
-		for i, v = range pattern {
+		for num := range pattern {
+			for i, v = range pattern[num] {
+			} // gets the key and value
 			re, _ := regexp.Compile(i)
 			submatches = re.FindStringIndex(substr)
-			//fmt.Println("\tsubmatches", submatches, submatches == nil)
-
-			if !(submatches == nil) {
+			if submatches != nil {
 				break
 			}
+
 		}
 		// not allowed token
 		if submatches == nil {
-			return []Token{}, errors.New("Not allowed token")
+			return []Token{}, errors.New("not allowed token")
 		}
-		pos += submatches[1]
-		//fmt.Printf("substr: %v\n", substr)
+		pos += submatches[1] // next string
+		// adds it to the token list if it is a valid word
 		if slices.Contains(tokenCheck, v) {
 			testTokens = append(testTokens, Token{v, substr[submatches[0]:submatches[1]]})
 			continue
@@ -69,31 +81,6 @@ func Tokenize(characters string) ([]Token, error) {
 			fmt.Printf("Unknown type for %v", substr[submatches[0]:submatches[1]])
 			return []Token{}, errors.New("unknown token type")
 		}
-		//testTokens = append(testTokens, Token{"", substr[submatches[0]:submatches[1]]})
 	}
-	//fmt.Println(testTokens)
 	return testTokens, nil
-	//tokens := [0]string{}
-	//pos := 0
-
-}
-
-func Equal(a, b []Token) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i, v := range a {
-		if v != b[i] {
-			return false
-		}
-	}
-	return true
-}
-
-func Assert(s string, testToken []Token) {
-	i, _ := Tokenize(s)
-	if !Equal(i, testToken) {
-		fmt.Println(i, testToken)
-		os.Exit(2)
-	}
 }
