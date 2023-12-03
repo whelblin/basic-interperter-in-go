@@ -1,4 +1,9 @@
 # basic-interperter-in-go
+## Converation from Python
+### Strongly typed
+Go is a strongly typed lauangue so it required that each function have a return type and all varaibles also be assigned a type
+Go does have the interface type, which accepts any type, but requries a binding when it its needs to be a specific type
+
 ## Language Features
 ### print values
 currently you can only print one value for each print statement. Each print statements ends in a endline
@@ -59,4 +64,13 @@ while(x){
     print x;
     x = x - 1;
 }
+```
+### do while statements
+do while loops are also allowed. Condiditons must be within () and the body must be contained by {}
+```
+i = 10;
+do{
+    print i;
+    i = i - 1;
+} while(i > 0);
 ```

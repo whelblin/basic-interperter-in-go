@@ -22,109 +22,120 @@ func Test_binary_operations(t *testing.T) {
 
 func Test_print_statements(t *testing.T) {
 	assert := assert.New(t)
-	assert.Equal(evaluteText("print 2;"), 2.0, "should be equal")
-	assert.Equal(evaluteText("print 2 + 4;"), 6.0, "should be equal")
-	assert.Equal(evaluteText("print -5;"), -5.0, "should be equal")
-	assert.Equal(evaluteText(`print "hello";`), `hello`, "should be equal")
-	assert.Equal(evaluteText("print (2 * 2) + 5;"), 9.0, "should be equal")
-	assert.Equal(evaluteText("print 2 + 2 * 5;"), 12.0, "should be equal")
+	assert.Equal(evaluteText("print (2);"), []interface{}{2.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("print (2 + 4);"), []interface{}{6.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("print (-5);"), []interface{}{-5.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText(`print ("hello");`), []interface{}{`hello`, "\n"}, "should be equal")
+	assert.Equal(evaluteText("print ((2 * 2) + 5);"), []interface{}{9.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("print( 2 + 2 * 5);"), []interface{}{12.0, "\n"}, "should be equal")
+
+}
+
+func Test_print_statements_with_end(t *testing.T) {
+	assert := assert.New(t)
+	assert.Equal(evaluteText("print (2);"), []interface{}{2.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("print (2 + 4);"), []interface{}{6.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("print (-5);"), []interface{}{-5.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText(`print ("hello");`), []interface{}{`hello`, "\n"}, "should be equal")
+	assert.Equal(evaluteText("print ((2 * 2) + 5);"), []interface{}{9.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("print( 2 + 2 * 5);"), []interface{}{12.0, "\n"}, "should be equal")
 
 }
 func Test_idenifier_statements(t *testing.T) {
 	assert := assert.New(t)
-	assert.Equal(evaluteText("x = 5; print x;"), 5.0, "should be equal")
-	assert.Equal(evaluteText("x = 5; print x + 4;"), 9.0, "should be equal")
-	assert.Equal(evaluteText("x = -5; print x;"), -5.0, "should be equal")
-	assert.Equal(evaluteText("x = -5; print x + 2;"), -3.0, "should be equal")
-	assert.Equal(evaluteText("x = 5; print x; x = 4;"), 4.0, "should be equal")
-	assert.Equal(evaluteText(`x = 5; print x; x = "hello";`), `hello`, "should be equal")
-	assert.Equal(evaluteText(`x = 5; y = x + 3; print x + y;`), 13.0, "should be equal")
-	assert.Equal(evaluteText(`x = 5; y = x + 3; print x + y -5;`), 8.0, "should be equal")
+	assert.Equal(evaluteText("x = 5; print (x);"), []interface{}{5.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("x = 5; print (x + 4);"), []interface{}{9.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("x = -5; print (x);"), []interface{}{-5.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("x = -5; print (x + 2);"), []interface{}{-3.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("x = 5; print (x); x = 4;"), 4.0, "should be equal")
+	assert.Equal(evaluteText(`x = 5; print (x); x = "hello";`), `hello`, "should be equal")
+	assert.Equal(evaluteText(`x = 5; y = x + 3; print (x + y);`), []interface{}{13.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText(`x = 5; y = x + 3; print (x + y -5);`), []interface{}{8.0, "\n"}, "should be equal")
 }
 func Test_block_statement(t *testing.T) {
 	assert := assert.New(t)
-	assert.Equal(evaluteText("{x = 5; print x;}"), 5.0, "should be equal")
-	assert.Equal(evaluteText("{x = 5; print x + 4;}"), 9.0, "should be equal")
-	assert.Equal(evaluteText("{x = -5; print x;}"), -5.0, "should be equal")
-	assert.Equal(evaluteText("{x = -5; print x + 2;}"), -3.0, "should be equal")
-	assert.Equal(evaluteText("{x = 5; print x; x = 4;}"), 4.0, "should be equal")
-	assert.Equal(evaluteText(`{x = 5; print x; x = "hello";}`), `hello`, "should be equal")
-	assert.Equal(evaluteText(`{x = 5; y = x + 3; print x + y;}`), 13.0, "should be equal")
-	assert.Equal(evaluteText(`{x = 5; y = x + 3; print x + y -5;}`), 8.0, "should be equal")
+	assert.Equal(evaluteText("{x = 5; print (x);}"), []interface{}{5.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("{x = 5; print (x + 4);}"), []interface{}{9.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("{x = -5; print (x);}"), []interface{}{-5.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("{x = -5; print (x + 2);}"), []interface{}{-3.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("{x = 5; print (x); x = 4;}"), 4.0, "should be equal")
+	assert.Equal(evaluteText(`{x = 5; print (x); x = "hello";}`), `hello`, "should be equal")
+	assert.Equal(evaluteText(`{x = 5; y = x + 3; print (x + y);}`), []interface{}{13.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText(`{x = 5; y = x + 3; print (x + y -5);}`), []interface{}{8.0, "\n"}, "should be equal")
 }
 
 func Test_if_statement(t *testing.T) {
 	assert := assert.New(t)
-	assert.Equal(evaluteText("if(1){print 1;}"), 1.0, "should be equal")
-	assert.Equal(evaluteText("if(5){print 1;}"), 1.0, "should be equal")
-	assert.Equal(evaluteText("if(0){print 1;}"), nil, "should be equal")
-	assert.Equal(evaluteText("if(-1){print 1;}"), nil, "should be equal")
-	assert.Equal(evaluteText("x = 1; if(x){print x;}"), 1.0, "should be equal")
-	assert.Equal(evaluteText("if(1){print 1;}else{print 2;}"), 1.0, "should be equal")
-	assert.Equal(evaluteText("if(0){print 1;}else{print 2;}"), 2.0, "should be equal")
-	assert.Equal(evaluteText("if(1 < 3){print 1;}else{print 2;}"), 1.0, "should be equal")
-	assert.Equal(evaluteText("if(3 > 5){print 1;}else{print 2;}"), 2.0, "should be equal")
-	assert.Equal(evaluteText("if(2 <= 2){print 1;}else{print 2;}"), 1.0, "should be equal")
-	assert.Equal(evaluteText("if(2 >= 1){print 1;}else{print 2;}"), 1.0, "should be equal")
-	assert.Equal(evaluteText("if(2 == 2){print 1;}else{print 2;}"), 1.0, "should be equal")
-	assert.Equal(evaluteText("if(2 != 2){print 1;}else{print 2;}"), 2.0, "should be equal")
-	assert.Equal(evaluteText(`if("a" != "a"){print 1;}else{print 2;}`), 2.0, "should be equal")
-	assert.Equal(evaluteText(`if("a" == "a"){print 1;}else{print 2;}`), 1.0, "should be equal")
+	assert.Equal(evaluteText("if(1){print (1);}"), []interface{}{1.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("if(5){print(1);}"), []interface{}{1.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("if(0){print (1);}"), nil, "should be equal")
+	assert.Equal(evaluteText("if(-1){print (1);}"), nil, "should be equal")
+	assert.Equal(evaluteText("x = 1; if(x){print (x);}"), []interface{}{1.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("if(1){print (1);}else{print (2);}"), []interface{}{1.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("if(0){print (1);}else{print (2);}"), []interface{}{2.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("if(1 < 3){print (1);}else{print (2);}"), []interface{}{1.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("if(3 > 5){print (1);}else{print (2);}"), []interface{}{2.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("if(2 <= 2){print (1);}else{print (2);}"), []interface{}{1.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("if(2 >= 1){print (1);}else{print (2);}"), []interface{}{1.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("if(2 == 2){print (1);}else{print (2);}"), []interface{}{1.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText("if(2 != 2){print (1);}else{print (2);}"), []interface{}{2.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText(`if("a" != "a"){print (1);}else{print (2);}`), []interface{}{2.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText(`if("a" == "a"){print (1);}else{print (2);}`), []interface{}{1.0, "\n"}, "should be equal")
 
 	assert.Equal(evaluteText(`if(1){if(0){
-											print 1;
+											print (1);
 										}else{
-											print 2;
+											print (2);
 											}
 										}else{
 											if(1){
-											print 3;
+											print (3);
 											}else{
-												print 4;
+												print (4);
 											}
-										}`), 2.0, "should be equal")
+										}`), []interface{}{2.0, "\n"}, "should be equal")
 	assert.Equal(evaluteText(`if(1){if(1){
-											print 1;
+											print (1);
 										}else{
-											print 2;
+											print (2);
 											}
 										}else{
 											if(1){
-											print 3;
+											print (3);
 											}else{
-												print 4;
+												print (4);
 											}
-										}`), 1.0, "should be equal")
+										}`), []interface{}{1.0, "\n"}, "should be equal")
 	assert.Equal(evaluteText(`if(0){if(0){
-											print 1;
+											print (1);
 										}else{
-											print 2;
+											print (2);
 											}
 										}else{
 											if(1){
-											print 3;
+											print (3);
 											}else{
-												print 4;
+												print (4);
 											}
-										}`), 3.0, "should be equal")
+										}`), []interface{}{3.0, "\n"}, "should be equal")
 	assert.Equal(evaluteText(`if(0){if(0){
-											print 1;
+											print (1);
 										}else{
-											print 2;
+											print (2);
 											}
 										}else{
 											if(0){
-											print 3;
+											print (3);
 											}else{
-												print 4;
+												print (4);
 											}
-										}`), 4.0, "should be equal")
+										}`), []interface{}{4.0, "\n"}, "should be equal")
 
 }
 
 func Test_while_loop(t *testing.T) {
 	assert := assert.New(t)
-	assert.Equal(evaluteText(`x = 10; while (x){x = x -1;}print x;`), 0.0, "should be equal")
-	assert.Equal(evaluteText(`x = 10; while (x > 2){x = x -1;}print x;`), 2.0, "should be equal")
+	assert.Equal(evaluteText(`x = 10; while (x){x = x -1;}print (x);`), []interface{}{0.0, "\n"}, "should be equal")
+	assert.Equal(evaluteText(`x = 10; while (x > 2){x = x -1;}print (x);`), []interface{}{2.0, "\n"}, "should be equal")
 
 }

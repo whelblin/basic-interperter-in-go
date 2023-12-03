@@ -2,7 +2,7 @@ import sys
 
 from tokenizer import tokenize
 
-from parser import parse
+from parser1 import parse
 
 from evaluator import evaluate
 
