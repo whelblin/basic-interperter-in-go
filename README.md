@@ -1,8 +1,8 @@
 # basic-interpreter-in-go
 ## Table of Contents
 1. [How to install and run the code](#Install-and-How-To-Run)
-2. [Conversion from the python to go ](#conversion-from-python)
-3. [Added features from the python version](#added-features-from-the-python-version)
+2. [Conversion from Python to Go ](#conversion-from-python)
+3. [Added features from the Python version](#added-features-from-the-python-version)
 4. [Language Features](#language-features)
 
 ## Install and How To Run
