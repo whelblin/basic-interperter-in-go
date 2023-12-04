@@ -76,14 +76,40 @@ func Parse(program_tokens []tokenizer.Token) ([]map[string]interface{}, error) {
 */
 func parse_statement() (map[string]interface{}, error) {
 	current_token := get_current_token()
-	if current_token.Value == "print" {
+	if current_token.Name == "print_statement" {
 		consume_token()
-		expression := parse_expression()
+		if get_current_token().Value != "(" {
+			return map[string]interface{}{}, errors.New("expected '('")
+		}
+		consume_token()
+		var expression map[string]interface{}
+		var print_items []map[string]interface{}
+		end := map[string]interface{}{"string": "\n"}
+		for get_current_token().Value != ")" {
+			if get_current_token().Value != "," {
+				if get_current_token().Value == "end" {
+					consume_token()
+					if get_current_token().Value != "=" {
+						return map[string]interface{}{}, errors.New("expected '='")
+					}
+					consume_token()
+					end = parse_expression()
+
+				} else {
+					expression = parse_expression()
+					print_items = append(print_items, expression)
+				}
+			} else {
+				consume_token()
+			}
+		}
+		consume_token()
 		if get_current_token().Value != ";" {
 			return map[string]interface{}{}, errors.New("missing ;")
 		}
 		consume_token()
-		return map[string]interface{}{"type": "print", "expression": expression}, nil
+		fmt.Println(print_items)
+		return map[string]interface{}{"type": "print", "expression": print_items, "end": end}, nil
 	} else if current_token.Value == "{" {
 		return parse_block(), nil
 
@@ -346,7 +372,15 @@ func parse_factor() map[string]interface{} {
 
 	} else if current_token.Name == "string" {
 		consume_token()
-		return map[string]interface{}{current_token.Name: current_token.Value}
+		fmt.Println("string", current_token.Value)
+		if current_token.Value == "\"\\n\"" {
+			return map[string]interface{}{"control": "\n"}
+		} else {
+			return map[string]interface{}{current_token.Name: current_token.Value}
+		}
+	} else if current_token.Name == "newline" {
+		consume_token()
+		return map[string]interface{}{"control": "\n"}
 	} else {
 		os.Exit(2)
 	}

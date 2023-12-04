@@ -1,4 +1,8 @@
-function add(x,y){print x + y;}
+i = 10;
+do{
+    print i;
+    i = i - 1;
+} while(i > 0);
 
 
 

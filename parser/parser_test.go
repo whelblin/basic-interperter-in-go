@@ -29,7 +29,7 @@ func Assert(s, testToken []map[string]interface{}) {
 	}
 }
 func Test_parse(t *testing.T) {
-	program_tokens, _ := tokenizer.Tokenize("print 1;")
+	program_tokens, _ := tokenizer.Tokenize("print (1);")
 	ast, _ := Parse(program_tokens)
 	//fmt.Printf("%# v\n", pretty.Formatter(ast))
 	Assert(ast, []map[string]interface{}{
@@ -37,8 +37,11 @@ func Test_parse(t *testing.T) {
 		{"statements": []map[string]interface{}{
 			{
 				"type": "print",
-				"expression": map[string]interface{}{
-					"number": "1",
+				"expression": []map[string]interface{}{
+					{"number": "1"},
+				},
+				"end": map[string]interface{}{
+					"string": "\n",
 				},
 			},
 		},
@@ -46,28 +49,35 @@ func Test_parse(t *testing.T) {
 	},
 	)
 
-	program_tokens, _ = tokenizer.Tokenize("print 1; print 2 + 3;")
+	program_tokens, _ = tokenizer.Tokenize("print (1); print (2 + 3);")
 	ast, _ = Parse(program_tokens)
 	Assert(ast, []map[string]interface{}{
 		{"type": "program"},
 		{"statements": []map[string]interface{}{
 			{
 				"type": "print",
-				"expression": map[string]interface{}{
-					"number": "1",
+				"expression": []map[string]interface{}{
+					{"number": "1"},
+				},
+				"end": map[string]interface{}{
+					"string": "\n",
 				},
 			},
 			{
 				"type": "print",
-				"expression": map[string]interface{}{
-					"type": "binary",
-					"left": map[string]interface{}{
-						"number": "2",
-					},
-					"operator": tokenizer.Token{Name: "binary_operator", Value: "+"},
-					"right": map[string]interface{}{
-						"number": "3",
-					},
+
+				"expression": []map[string]interface{}{
+					{"type": "binary",
+						"left": map[string]interface{}{
+							"number": "2",
+						},
+						"operator": tokenizer.Token{"binary_operator", "+"},
+						"right": map[string]interface{}{
+							"number": "3",
+						}},
+				},
+				"end": map[string]interface{}{
+					"string": "\n",
 				},
 			},
 		},

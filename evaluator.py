@@ -64,7 +64,7 @@ def evaluate(node):
     raise Exception(f"Unknown content in AST={node}")
 
 from tokenizer import tokenize
-from parser import parse
+from parser1 import parse
 from pprint import pprint
 
 def test_evaluate_operations():

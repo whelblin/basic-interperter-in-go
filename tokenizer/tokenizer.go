@@ -20,6 +20,7 @@ var pattern = []map[string]string{
 	{`^\s+|^\n|^\t`: "space"},
 	{`^\+|^\-|^\*|^/`: "binary_operator"},
 	{`^\d+(\.\d*)?`: "number"},
+	{`^\n`: "newline"},
 	{`^"([^"]|"")*"`: "string"},
 	{`^<|^>`: "comparison"},
 	{`^!`: "not"},
@@ -29,7 +30,7 @@ var pattern = []map[string]string{
 	{`^\}`: "right_curly_brace"},
 	{`^,`: "comma"},
 	{`^\;`: "semicolon"},
-	{`^print`: "print"},
+	{`^print`: "print_statement"},
 	{`^if`: "if"},
 	{`^while`: "while"},
 	{`^do`: "do"},
@@ -44,7 +45,7 @@ var pattern = []map[string]string{
 var tokenCheck = []string{"print_statement", "binary_operator", "number",
 	"string", "comparison", "left_parenthesis",
 	"right_parenthesis", "left_curly_brace",
-	"right_curly_brace", "semicolon", "identifier", "assignment", "not", "comma", "print", "if", "while", "do", "function", "input"}
+	"right_curly_brace", "semicolon", "identifier", "assignment", "not", "comma", "print", "if", "while", "do", "function", "input", "newline"}
 
 // The lex/tokenize function
 /**

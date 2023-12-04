@@ -62,9 +62,18 @@ func Evalute(node []map[string]interface{}) any {
 	}
 	return result
 }
-func evalute_print(x map[string]interface{}) any {
-	result := evalute_statement(x)
-	fmt.Printf("%v\n", result)
+func evalute_print(list []map[string]interface{}, end map[string]interface{}) any {
+	var result []interface{}
+	delimter := "\n"
+	if end["string"] != "\n" {
+		delimter = evalute_statement(end).(string)
+	}
+	for i, x := range list {
+		result = append(result, evalute_statement(x))
+		//fmt.Println("result", result)
+		fmt.Printf("%v%v", result[i], delimter)
+	}
+	result = append(result, delimter)
 	return result
 }
 func evalute_binary(op string, x, y map[string]interface{}) float64 {
@@ -141,7 +150,7 @@ func evalute_statement(v map[string]interface{}) any {
 	if t != nil {
 		if t == "print" {
 			//fmt.Println("print")
-			return evalute_print(v["expression"].(map[string]interface{}))
+			return evalute_print(v["expression"].([]map[string]interface{}), v["end"].(map[string]interface{}))
 		} else if t == "binary" {
 			return evalute_binary(v["operator"].(tokenizer.Token).Value, v["left"].(map[string]interface{}), v["right"].(map[string]interface{}))
 		} else if t == "unary" {
@@ -190,6 +199,10 @@ func evalute_statement(v map[string]interface{}) any {
 	}
 	if v["string"] != nil {
 		return strings.Trim(v["string"].(string), string(v["string"].(string)[0]))
+
+	}
+	if v["control"] != nil {
+		return v["control"]
 	}
 	return -1
 }
