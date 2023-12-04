@@ -64,7 +64,7 @@ func Test_parse(t *testing.T) {
 					"left": map[string]interface{}{
 						"number": "2",
 					},
-					"operator": tokenizer.Token{"binary_operator", "+"},
+					"operator": tokenizer.Token{Name: "binary_operator", Value: "+"},
 					"right": map[string]interface{}{
 						"number": "3",
 					},
