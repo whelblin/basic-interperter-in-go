@@ -14,7 +14,7 @@ func Equal(a, b []map[string]interface{}) bool {
 	if len(a) != len(b) {
 		return false
 	}
-	for i, _ := range a {
+	for i := range a {
 		if !reflect.DeepEqual(a[i], b[i]) {
 			return false
 		}
@@ -38,10 +38,14 @@ func Test_parse(t *testing.T) {
 			{
 				"type": "print",
 				"expression": []map[string]interface{}{
-					{"number": "1"},
+					{
+						"type":  "number",
+						"value": "1",
+					},
 				},
 				"end": map[string]interface{}{
-					"string": "\n",
+					"type":  "control",
+					"value": "\n",
 				},
 			},
 		},
@@ -57,10 +61,14 @@ func Test_parse(t *testing.T) {
 			{
 				"type": "print",
 				"expression": []map[string]interface{}{
-					{"number": "1"},
+					{
+						"type":  "number",
+						"value": "1",
+					},
 				},
 				"end": map[string]interface{}{
-					"string": "\n",
+					"type":  "control",
+					"value": "\n",
 				},
 			},
 			{
@@ -69,15 +77,20 @@ func Test_parse(t *testing.T) {
 				"expression": []map[string]interface{}{
 					{"type": "binary",
 						"left": map[string]interface{}{
-							"number": "2",
+
+							"type":  "number",
+							"value": "2",
 						},
-						"operator": tokenizer.Token{"binary_operator", "+"},
+						"operator": tokenizer.Token{Name: "binary_operator", Value: "+"},
 						"right": map[string]interface{}{
-							"number": "3",
+
+							"type":  "number",
+							"value": "3",
 						}},
 				},
 				"end": map[string]interface{}{
-					"string": "\n",
+					"type":  "control",
+					"value": "\n",
 				},
 			},
 		},

@@ -11,7 +11,7 @@ var current_token_index int
 
 /*
 @input: void
-@return: a Token type
+@output: a Token type
 @info:
   - returns the current token by its index in the array
 */
@@ -33,7 +33,7 @@ func consume_token() {
 
 /*
 @input: an array of Tokens given by the tokenizer function
-@return: the ast in the form of a array of maped values by their type, error code
+@output: the ast in the form of a array of maped values by their type, error code
 @info:
   - parses each token in the input array and adds it to the ast which is all wrapped
     under the statements section
@@ -57,7 +57,7 @@ func Parse(program_tokens []tokenizer.Token) ([]map[string]interface{}, error) {
 
 /*
 @input: void
-@return: a sub tree of the ast, error code
+@output: a sub tree of the ast, error code
 @info:
 
   - finds the type of the current token and builds the sub tree
@@ -69,7 +69,7 @@ func Parse(program_tokens []tokenizer.Token) ([]map[string]interface{}, error) {
 
   - parse_expression(): to parse expressions
   - parse_statement(): to parse statements within if,else,while loops
-  - parse_parameters(): to parse function paramaters
+  - parse_parameters(): to parse function parameters
   - get_current_token(): gets the current token in the array
   - consume_token(): moves to the next token
   - parse_block(): parses a block of code surrounded in {}
@@ -84,7 +84,7 @@ func parse_statement() (map[string]interface{}, error) {
 		consume_token()
 		var expression map[string]interface{}
 		var print_items []map[string]interface{}
-		end := map[string]interface{}{"string": "\n"}
+		end := map[string]interface{}{"type": "control", "value": "\n"}
 		for get_current_token().Value != ")" {
 			if get_current_token().Value != "," {
 				if get_current_token().Value == "end" {
@@ -108,7 +108,6 @@ func parse_statement() (map[string]interface{}, error) {
 			return map[string]interface{}{}, errors.New("missing ;")
 		}
 		consume_token()
-		fmt.Println(print_items)
 		return map[string]interface{}{"type": "print", "expression": print_items, "end": end}, nil
 	} else if current_token.Value == "{" {
 		return parse_block(), nil
@@ -346,7 +345,7 @@ func parse_factor() map[string]interface{} {
 	current_token := get_current_token()
 	if current_token.Name == "number" {
 		consume_token()
-		return map[string]interface{}{current_token.Name: current_token.Value}
+		return map[string]interface{}{"type": current_token.Name, "value": current_token.Value}
 
 	} else if current_token.Name == "binary_operator" {
 		operator := get_current_token()
@@ -372,15 +371,14 @@ func parse_factor() map[string]interface{} {
 
 	} else if current_token.Name == "string" {
 		consume_token()
-		fmt.Println("string", current_token.Value)
 		if current_token.Value == "\"\\n\"" {
-			return map[string]interface{}{"control": "\n"}
+			return map[string]interface{}{"type": "control", "value": "\n"}
+
+		} else if current_token.Value == "\"\\t\"" {
+			return map[string]interface{}{"type": "control", "value": "\t"}
 		} else {
-			return map[string]interface{}{current_token.Name: current_token.Value}
+			return map[string]interface{}{"type": "string", "value": current_token.Value}
 		}
-	} else if current_token.Name == "newline" {
-		consume_token()
-		return map[string]interface{}{"control": "\n"}
 	} else {
 		os.Exit(2)
 	}

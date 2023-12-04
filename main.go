@@ -25,11 +25,14 @@ func main() {
 			if errCatch != nil {
 				fmt.Println("ERROR:", errCatch)
 			}
-			evaluator.Evalute(ast)
+			_, errCatch = evaluator.Evaluate(ast)
+			if errCatch != nil {
+				fmt.Println("ERROR:", errCatch)
+			}
 		}
 	} else {
 		//runner()
-		tokens, err := tokenizer.Tokenize(`print("hello");`)
+		tokens, err := tokenizer.Tokenize(`print("hello" < 4);`)
 		//tokens, err := tokenizer.Tokenize(`add (1,2);`)
 
 		if err != nil {
@@ -38,7 +41,10 @@ func main() {
 		fmt.Println("Tokens", tokens)
 		ast, _ := parser.Parse(tokens)
 		fmt.Printf("%# v\n", pretty.Formatter(ast))
-		evaluator.Evalute(ast)
+		_, err = evaluator.Evaluate(ast)
+		if err != nil {
+			fmt.Println("ERROR:", err)
+		}
 		/*
 			tokens, err = tokenizer.Tokenize(`add(1,2);`)
 			//tokens, err := tokenizer.Tokenize(`add (1,2);`)
@@ -73,6 +79,6 @@ func runner() {
 		if errCatch != nil {
 			fmt.Println("ERROR:", errCatch)
 		}
-		evaluator.Evalute(ast)
+		evaluator.Evaluate(ast)
 	}
 }

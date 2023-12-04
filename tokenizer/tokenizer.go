@@ -20,7 +20,6 @@ var pattern = []map[string]string{
 	{`^\s+|^\n|^\t`: "space"},
 	{`^\+|^\-|^\*|^/`: "binary_operator"},
 	{`^\d+(\.\d*)?`: "number"},
-	{`^\n`: "newline"},
 	{`^"([^"]|"")*"`: "string"},
 	{`^<|^>`: "comparison"},
 	{`^!`: "not"},

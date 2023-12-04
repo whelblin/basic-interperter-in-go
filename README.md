@@ -1,19 +1,75 @@
 # basic-interperter-in-go
-## Converation from Python
+## Conversion from Python
 ### Strongly typed
-Go is a strongly typed lauangue so it required that each function have a return type and all varaibles also be assigned a type
-Go does have the interface type, which accepts any type, but requries a binding when it its needs to be a specific type
+Go is a strongly typed language so it required that each function have a return type and all variables also be assigned a type
+Go does have the interface type, which accepts any type, but requires a binding when it its needs to be a specific type
+I also had to create a structure called Token to handle the tokens because arrays must be all the same value in go
+### Error Handling
+Go does not have the same ability to catch errors like python. Instead it uses a testing library to return error values within the parser and tokenizer. Every function returns a error value. It ca either be nil or an error. These error messages are passed up the stack until the Evaluate function returns it
+## Added Features From the Python Version
+### Print Function
+The print function can take multiple values separated by a comma. It delimiter can also be changed with the end= variable
+```
+print("The value of 1+2 is: ", 1+2, end = ""); print("");
+```
+```
+Output>>The value of 1+2 is: 3
+```
+### Do While Loops
+do whiles are also possible within this implementation of the interpreter.
+```
+x = 10;
+print("The value of x is: ", end = "");
+do{
+    print(x, end=" ");
+    x = x-1;
+}while(x > 0);
+print("");
+```
+```
+Output>>The value of x is: 10 9 8 7 6 5 4 3 2 1 
+```
+### String Comparison
+Strings can also be compared within the expressions
+You can use <, <=, >, >=, !=, and ==
+```
+x = "hello";
+y = "Hello";
+print(x == y);
 
+char = "a";
+if (char < "b"){
+    print("a is less than b");
+}
+else{
+    print("a is greater than b");
+}
+
+```
+```
+Output>>false
+      >>a is less than b
+```
 ## Language Features
-### print values
-currently you can only print one value for each print statement. Each print statements ends in a endline
+### Print Values
+print statements must be wrapped in () and can print multiple values separated by a comma. Each print statements ends in a newline by default
 ```
-print 5;
-print "hello";
-print 1 < 3;
-print "a" < "b";
+print (5);
+print("hello");
+print (1 < 3);
+print ("a" < "b");
+print("hello", "world");
+print("The value of 1+2 is: ", 1+2);
 ```
-### variables
+You can change the delimiter by adding an end= argument to the print function
+```
+print("The value of 1+2 is: ", 1+2, end = ""); print("");
+```
+
+```
+Output>>The value of 1+2 is: 3
+```
+### Variables
 You can store numbers and strings. The numbers can be integers or floating points
 ```
 x = 12;
@@ -26,7 +82,7 @@ x = 1; // true
 x = 0; // false
 x = 3; //true
 ```
-### if statement
+### If Statement
 if statements condition must have () and the body must have {}
 ```
 if (1 < 3){
@@ -48,7 +104,7 @@ if (5){
     print 5;
 }
 ```
-### while statements
+### While Statements
 while loops are also allowed. The condition must be in () and be followed by {}
 ```
 i = 10;
@@ -65,8 +121,8 @@ while(x){
     x = x - 1;
 }
 ```
-### do while statements
-do while loops are also allowed. Condiditons must be within () and the body must be contained by {}
+### Do While Statements
+do while loops are also allowed. Conditions must be within () and the body must be contained by {}
 ```
 i = 10;
 do{
