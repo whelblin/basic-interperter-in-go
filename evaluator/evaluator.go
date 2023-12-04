@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// binary operations for numbers
 var binary_operations = map[string]func(float64, float64) float64{
 	"+": func(x, y float64) float64 { return x + y },
 	"-": func(x, y float64) float64 { return x - y },
@@ -16,6 +17,7 @@ var binary_operations = map[string]func(float64, float64) float64{
 	"/": func(x, y float64) float64 { return x / y },
 }
 
+// binary comparsions for numbers
 var binary_comparisons = map[string]func(float64, float64) bool{
 	"<":  func(x, y float64) bool { return x < y },
 	"<=": func(x, y float64) bool { return x <= y },
@@ -24,6 +26,8 @@ var binary_comparisons = map[string]func(float64, float64) bool{
 	"==": func(x, y float64) bool { return x == y },
 	"!=": func(x, y float64) bool { return x != y },
 }
+
+// binary comparisions for strings
 var binary_comparisons_string = map[string]func(string, string) bool{
 	"<":  func(x, y string) bool { return x < y },
 	"<=": func(x, y string) bool { return x <= y },
@@ -35,17 +39,17 @@ var binary_comparisons_string = map[string]func(string, string) bool{
 var unary_operations = map[string]func(float64) float64{
 	"-": func(f float64) float64 { return -f },
 }
+
+// environment that maps a name to a value of any type
 var env = map[string]interface{}{}
 
 func Evalute(node []map[string]interface{}) any {
 	var index int = 0
 	current_node := node[index]
 	var result any
-	//fmt.Println("node:", current_node)
 	if current_node["type"] == "program" {
 		index += 1
 		current_node = node[index]
-		//fmt.Println("new node:", current_node)
 		current_array := current_node["statements"].([]map[string]interface{})
 		for _, v := range current_array {
 			result = evalute_statement(v)

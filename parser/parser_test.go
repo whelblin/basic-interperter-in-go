@@ -65,6 +65,7 @@ func Test_parse(t *testing.T) {
 			},
 			{
 				"type": "print",
+
 				"expression": []map[string]interface{}{
 					{"type": "binary",
 						"left": map[string]interface{}{

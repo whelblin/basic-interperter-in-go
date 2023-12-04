@@ -8,6 +8,8 @@ import (
 )
 
 // class to store token data
+// the name is the token type
+// value is the value or name of the token
 type Token struct {
 	Name  string
 	Value string
@@ -38,7 +40,8 @@ var pattern = []map[string]string{
 	{`^={1}`: "assignment"},
 }
 
-// used to check to make sure the token exisits
+// used to check to make sure the token type exisits
+
 var tokenCheck = []string{"print_statement", "binary_operator", "number",
 	"string", "comparison", "left_parenthesis",
 	"right_parenthesis", "left_curly_brace",
@@ -62,6 +65,7 @@ func Tokenize(characters string) ([]Token, error) {
 			} // gets the key and value
 			re, _ := regexp.Compile(i)
 			submatches = re.FindStringIndex(substr)
+			// valid token will not be nil
 			if submatches != nil {
 				break
 			}
@@ -71,7 +75,7 @@ func Tokenize(characters string) ([]Token, error) {
 		if submatches == nil {
 			return []Token{}, errors.New("not allowed token")
 		}
-		pos += submatches[1] // next string
+		pos += submatches[1] // moves to get the next string
 		// adds it to the token list if it is a valid word
 		if slices.Contains(tokenCheck, v) {
 			testTokens = append(testTokens, Token{v, substr[submatches[0]:submatches[1]]})
