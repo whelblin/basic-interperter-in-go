@@ -1,10 +1,10 @@
 # basic-interpreter-in-go
+## Table of Contents
+1. [How to install and run the code](#Install-and-How-To-Run)
+2. [Conversion from the python to go ](#conversion-from-python)
+3. [Added features from the python version](#added-features-from-the-python-version)
+4. [Language Features](#language-features)
 
-| [How to install and run the code](#Install-and-How-To-Run)
-| [Conversion from the python to go ](#conversion-from-python)
-| [Added features from the python version](#added-features-from-the-python-version)
-| [Language Features](#language-features)
-|
 ## Install and How To Run
 ### Install go
 go to https://go.dev/doc/install to get the instructions on how to install go
@@ -32,10 +32,10 @@ go test ./...
 ## Conversion from Python
 ### Strongly typed
 Go is a strongly typed language so it required that each function have a return type and all variables also be assigned a type
-Go does have the interface type, which accepts any type, but requires a binding when it its needs to be a specific type
+Go does have the interface type, which accepts any type, but requires a binding when it needs to be a specific type
 I also had to create a structure called Token to handle the tokens because arrays must be all the same value in go
 ### Error Handling
-Go does not have the same ability to catch errors like python. Instead it uses a testing library to return error values within the parser and tokenizer. Every function returns a error value. It ca either be nil or an error. These error messages are passed up the stack until the Evaluate function returns it
+Go does not have the same ability to catch errors as python. Instead it uses a testing library to return error values within the parser and tokenizer. Every function returns an error value. It can either be nil or an error. These error messages are passed up the stack until the Evaluate function returns it
 ## Added Features From the Python Version
 ### Print Function
 The print function can take multiple values separated by a comma. It delimiter can also be changed with the end= variable
