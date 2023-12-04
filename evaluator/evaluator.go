@@ -3,7 +3,7 @@ package evaluator
 import (
 	"errors"
 	"fmt"
-	"interperter/tokenizer"
+	"interpreter/tokenizer"
 	"reflect"
 	"strconv"
 	"strings"

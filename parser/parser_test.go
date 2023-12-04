@@ -2,7 +2,7 @@ package parser
 
 import (
 	"fmt"
-	"interperter/tokenizer"
+	"interpreter/tokenizer"
 	"os"
 	"reflect"
 	"testing"

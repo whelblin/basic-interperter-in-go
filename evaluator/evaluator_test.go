@@ -1,8 +1,8 @@
 package evaluator
 
 import (
-	"interperter/parser"
-	"interperter/tokenizer"
+	"interpreter/parser"
+	"interpreter/tokenizer"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

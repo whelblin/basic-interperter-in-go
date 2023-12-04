@@ -1,4 +1,32 @@
-# basic-interperter-in-go
+# basic-interpreter-in-go
+
+| [How to install and run the code](#Install-and-How-To-Run)
+| [Conversion from the python to go ](#conversion-from-python)
+| [Added features from the python version](#added-features-from-the-python-version)
+| [Language Features](#language-features)
+|
+## Install and How To Run
+### Install go
+go to https://go.dev/doc/install to get the instructions on how to install go
+### Run the code
+```
+go run .
+```
+#### Arguments
+no arguments runs the RELP
+The RELP can be exited by typing exit
+you can also give it a file to run instead
+```
+go run . test.t
+```
+### Build the code
+```
+go build ./...
+```
+### Run the Test Code
+```
+go test ./...
+```
 ## Conversion from Python
 ### Strongly typed
 Go is a strongly typed language so it required that each function have a return type and all variables also be assigned a type

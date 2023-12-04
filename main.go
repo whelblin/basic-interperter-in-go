@@ -3,9 +3,9 @@ package main
 import (
 	"bufio"
 	"fmt"
-	evaluator "interperter/evaluator"
-	"interperter/parser"
-	"interperter/tokenizer"
+	evaluator "interpreter/evaluator"
+	"interpreter/parser"
+	"interpreter/tokenizer"
 	"os"
 
 	"github.com/kr/pretty"
@@ -16,7 +16,6 @@ func main() {
 		args := os.Args[1:]
 		if args != nil {
 			dat, _ := os.ReadFile(args[0])
-			fmt.Printf("")
 			tokens, errCatch := tokenizer.Tokenize(string(dat))
 			if errCatch != nil {
 				fmt.Println("ERROR:", errCatch)
@@ -31,37 +30,13 @@ func main() {
 			}
 		}
 	} else {
-		//runner()
-		tokens, err := tokenizer.Tokenize(`print("hello" < 4);`)
-		//tokens, err := tokenizer.Tokenize(`add (1,2);`)
+		runner()
 
-		if err != nil {
-			fmt.Println("ERROR:", err)
-		}
-		fmt.Println("Tokens", tokens)
-		ast, _ := parser.Parse(tokens)
-		fmt.Printf("%# v\n", pretty.Formatter(ast))
-		_, err = evaluator.Evaluate(ast)
-		if err != nil {
-			fmt.Println("ERROR:", err)
-		}
-		/*
-			tokens, err = tokenizer.Tokenize(`add(1,2);`)
-			//tokens, err := tokenizer.Tokenize(`add (1,2);`)
-
-			if err != nil {
-				fmt.Println("ERROR:", err)
-			}
-			fmt.Println("Tokens", tokens)
-			ast, _ = parser.Parse(tokens)
-			fmt.Printf("%# v\n", pretty.Formatter(ast))
-			//evaluator.Evalute(ast)
-		*/
 	}
 }
 
 func runner() {
-	fmt.Printf("starting\n")
+	fmt.Printf("starting the RELP\n")
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		var source_code string
@@ -80,5 +55,20 @@ func runner() {
 			fmt.Println("ERROR:", errCatch)
 		}
 		evaluator.Evaluate(ast)
+	}
+}
+
+func testing_main() {
+	tokens, err := tokenizer.Tokenize(`print("hello");`)
+
+	if err != nil {
+		fmt.Println("ERROR:", err)
+	}
+	fmt.Println("Tokens", tokens)
+	ast, _ := parser.Parse(tokens)
+	fmt.Printf("%# v\n", pretty.Formatter(ast))
+	_, err = evaluator.Evaluate(ast)
+	if err != nil {
+		fmt.Println("ERROR:", err)
 	}
 }

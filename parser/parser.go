@@ -2,7 +2,7 @@ package parser
 
 import (
 	"errors"
-	"interperter/tokenizer"
+	"interpreter/tokenizer"
 	"os"
 )
 
@@ -33,7 +33,7 @@ func consume_token() {
 
 /*
 @input: an array of Tokens given by the tokenizer function
-@output: the ast in the form of a array of maped values by their type, error code
+@output: the ast in the form of a array of mapped values by their type, error code
 @info:
   - parses each token in the input array and adds it to the ast which is all wrapped
     under the statements section
@@ -63,7 +63,7 @@ func Parse(program_tokens []tokenizer.Token) ([]map[string]interface{}, error) {
   - finds the type of the current token and builds the sub tree
     for that statement
   - might consume multiple tokens for each statement
-  - checks for invaild syntax and returns an error if needed
+  - checks for invalid syntax and returns an error if needed
 
 @uses:
 
@@ -227,7 +227,7 @@ func parse_statement() (map[string]interface{}, error) {
 
 /*
 @input: void
-@output: the subtree for the ast for the block of statments, error code
+@output: the subtree for the ast for the block of statements, error code
 @info:
   - goes through each token and parses each statements
   - each iteration through the loop might consume multiple tokens
@@ -303,7 +303,7 @@ func parse_expression() map[string]interface{} {
 @input: void
 @output: the sub tree for the term
 @info
-  - parses the left tfactor first
+  - parses the left factor first
   - if there is an operator, it will also parse the right factor and return the tree
     --order of operations: *,/,+,-, <, <=, >, >=, ==, !=
     --the * and / are done here instead of parse_term so they are done first
@@ -334,7 +334,7 @@ func parse_term() map[string]interface{} {
     -- binary_operator, which means it is a unary operation because the operator is the left factor
     -- left_parenthesis for an expression
     -- string
-    -- identifier, which can be a user varaible or function call
+    -- identifier, which can be a user variable or function call
 
 @uses:
   - consume_token(): moves to the next token
