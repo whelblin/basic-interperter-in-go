@@ -9,13 +9,15 @@
 ### Install go
 go to https://go.dev/doc/install to get the instructions on how to install go
 ### Run the code
+
+#### With No Arguments
+- no arguments runs the RELP
+    - The RELP can be exited by typing exit
 ```
 go run .
 ```
-#### Arguments
-no arguments runs the RELP
-The RELP can be exited by typing exit
-you can also give it a file to run instead
+#### With Arguments
+- you can also give it a file to run instead
 ```
 go run . test.t
 ```
