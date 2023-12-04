@@ -19,7 +19,7 @@ go run .
 #### With Arguments
 - you can also give it a file to run instead
 ```
-go run . test.t
+go run . test.bean
 ```
 ### Build the code
 ```
